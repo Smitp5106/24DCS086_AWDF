@@ -1,0 +1,53 @@
+name: Task Management CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    name: Build & Automated Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (npm install)
+        run: |
+          if [ -d "./backend" ]; then
+            cd ./backend && npm install
+          elif [ -d "./task-manager-app/task-manager-app/backend" ]; then
+            cd ./task-manager-app/task-manager-app/backend && npm install
+          fi
+
+      - name: Run automated tests
+        run: |
+          if [ -d "./backend" ]; then
+            cd ./backend && npm test
+          elif [ -d "./task-manager-app/task-manager-app/backend" ]; then
+            cd ./task-manager-app/task-manager-app/backend && npm test
+          fi
+
+      - name: Install Frontend dependencies
+        run: |
+          if [ -d "./frontend" ]; then
+            cd ./frontend && npm install
+          elif [ -d "./task-manager-app/task-manager-app/frontend" ]; then
+            cd ./task-manager-app/task-manager-app/frontend && npm install
+          fi
+
+      - name: Build Frontend (React + Vite)
+        run: |
+          if [ -d "./frontend" ]; then
+            cd ./frontend && npm run build
+          elif [ -d "./task-manager-app/task-manager-app/frontend" ]; then
+            cd ./task-manager-app/task-manager-app/frontend && npm run build
+          fi
