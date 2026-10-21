@@ -52,14 +52,21 @@ export default function App() {
     loadTasks();
   }, [loadTasks]);
 
-  const handleCreate = async ({ title, description }) => {
+  const handleCreate = async ({ title, description, priority, suggestedDeadline }) => {
     setSubmitting(true);
     const tempId = Date.now().toString();
-    const tempTask = { id: tempId, title, description, status: "pending" };
+    const tempTask = {
+      id: tempId,
+      title,
+      description,
+      priority: priority || "medium",
+      suggestedDeadline: suggestedDeadline || "",
+      status: "pending"
+    };
     setTasks((prev) => [...prev, tempTask]);
     
     try {
-      const res = await api.createTask({ title, description });
+      const res = await api.createTask({ title, description, priority, suggestedDeadline });
       setTasks((prev) => prev.map((t) => (t.id === tempId ? res.data.data : t)));
       pushLog("POST", "/api/tasks");
       setConnected(true);
@@ -115,7 +122,7 @@ export default function App() {
 
       {error && <div className="banner banner--error">{error}</div>}
 
-      <NewTaskForm onCreate={handleCreate} submitting={submitting} />
+      <NewTaskForm onCreate={handleCreate} submitting={submitting} onLog={pushLog} />
 
       {loading ? (
         <div className="loading">Loading tasks…</div>

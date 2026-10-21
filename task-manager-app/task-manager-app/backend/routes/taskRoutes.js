@@ -7,10 +7,12 @@ const {
   getTaskById,
   createTask,
   updateTask,
-  deleteTask
+  deleteTask,
+  getAiSuggestions
 } = require("../controllers/taskController");
 
 router.get("/", getAllTasks);
+router.post("/ai-suggest", getAiSuggestions);
 router.get("/:id", validateTaskId, getTaskById);
 router.post("/", createTask);
 router.put("/:id", validateTaskId, updateTask);

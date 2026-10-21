@@ -11,3 +11,5 @@ export const fetchTasks = () => client.get("/");
 export const createTask = (task) => client.post("/", task);
 export const updateTask = (id, task) => client.put(`/${id}`, task);
 export const deleteTask = (id) => client.delete(`/${id}`);
+export const getAiSuggestions = (payload) => client.post("/ai-suggest", payload);
+
