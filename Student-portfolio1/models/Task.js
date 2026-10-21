@@ -15,6 +15,15 @@ const taskSchema = new mongoose.Schema({
     enum: ['pending', 'in-progress', 'completed'],
     default: 'pending'
   },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high', 'urgent'],
+    default: 'medium'
+  },
+  suggestedDeadline: {
+    type: String,
+    default: ''
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

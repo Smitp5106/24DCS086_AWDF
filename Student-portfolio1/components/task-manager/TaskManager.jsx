@@ -53,14 +53,21 @@ export default function TaskManager() {
     loadTasks();
   }, [loadTasks]);
 
-  const handleCreate = async ({ title, description }) => {
+  const handleCreate = async ({ title, description, priority, suggestedDeadline }) => {
     setSubmitting(true);
     const tempId = Date.now().toString();
-    const tempTask = { id: tempId, title, description, status: "pending" };
+    const tempTask = {
+      id: tempId,
+      title,
+      description,
+      priority: priority || "medium",
+      suggestedDeadline: suggestedDeadline || "",
+      status: "pending"
+    };
     setTasks((prev) => [...prev, tempTask]);
     
     try {
-      const res = await api.createTask({ title, description });
+      const res = await api.createTask({ title, description, priority, suggestedDeadline });
       const newTask = res.data?.data || res.data;
       if (newTask) {
         setTasks((prev) => prev.map((t) => (t.id === tempId ? { ...newTask, id: newTask._id || newTask.id } : t)));
@@ -122,7 +129,7 @@ export default function TaskManager() {
         <Header connected={connected} taskCount={tasks.length} />
         
         <div className="swiss-grid-2" style={{ marginBottom: '40px' }}>
-          <NewTaskForm onCreate={handleCreate} submitting={submitting} />
+          <NewTaskForm onCreate={handleCreate} submitting={submitting} onLog={pushLog} />
           <ActivityLog entries={log} />
         </div>
 

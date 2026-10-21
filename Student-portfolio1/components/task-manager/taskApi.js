@@ -57,3 +57,15 @@ export const deleteTask = async (id) => {
   const result = await handleResponse(res);
   return { data: result };
 };
+
+export const getAiSuggestions = async (payload) => {
+  const res = await fetch(`${API_BASE_URL}/ai-suggest`, {
+    method: "POST",
+    headers: getHeaders(),
+    credentials: 'include',
+    body: JSON.stringify(payload)
+  });
+  const result = await handleResponse(res);
+  return { data: result };
+};
+

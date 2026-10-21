@@ -1,4 +1,5 @@
 import Task from '../models/Task.js';
+import { generateTaskSuggestions, generateHeuristicSuggestions } from '../services/aiService.js';
 
 // @desc    Get all tasks for the logged in user
 // @route   GET /api/tasks
@@ -17,12 +18,14 @@ export const getTasks = async (req, res) => {
 // @access  Private
 export const createTask = async (req, res) => {
   try {
-    const { title, description, status } = req.body;
+    const { title, description, status, priority, suggestedDeadline } = req.body;
 
     const task = await Task.create({
       title,
       description,
-      status,
+      status: status || 'pending',
+      priority: priority || 'medium',
+      suggestedDeadline: suggestedDeadline || '',
       user: req.user.id // Associate task with the user
     });
 
@@ -81,3 +84,23 @@ export const deleteTask = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get AI suggestions for task
+// @route   POST /api/tasks/ai-suggest
+// @access  Private
+export const getAiSuggestions = async (req, res) => {
+  try {
+    const { title, description } = req.body || {};
+    if (!title || typeof title !== 'string' || !title.trim()) {
+      return res.status(400).json({ message: 'Please provide a task title to generate AI suggestions.' });
+    }
+
+    const suggestions = await generateTaskSuggestions(title.trim(), description || '');
+    res.status(200).json({ success: true, data: suggestions });
+  } catch (error) {
+    console.error('AI Suggestion error:', error.message);
+    const fallback = generateHeuristicSuggestions(req.body?.title || 'Task', req.body?.description || '');
+    res.status(200).json({ success: true, data: fallback, fallback: true });
+  }
+};
+
